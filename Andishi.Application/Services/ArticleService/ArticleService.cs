@@ -65,7 +65,7 @@ namespace Andishi.Application.Services.ArticleService
             if (article != null)
             {
                 article.Title = updateArticleDTO.Title ?? article.Title;
-            article.Content = updateArticleDTO.Content ?? article.Content;
+                article.Content = updateArticleDTO.Content ?? article.Content;
       
             await _articleRepository.UpdateArticle(article);
             return article;
