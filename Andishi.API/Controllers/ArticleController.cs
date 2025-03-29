@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Andishi.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class ArticleController : ControllerBase
     {
         private readonly IArticleService _articleService;
