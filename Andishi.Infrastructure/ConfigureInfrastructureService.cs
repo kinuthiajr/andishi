@@ -7,6 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Andishi.Core.Options;
+using Andishi.Core.Interfaces;
+using Andishi.Infrastructure.Repository;
+using Andishi.Application.Interfaces;
+using Andishi.Application.Services.ArticleService;
 
 
 namespace Andishi.Infrastructure
@@ -19,6 +23,8 @@ namespace Andishi.Infrastructure
             option.UseNpgsql(provider.GetRequiredService<IOptionsSnapshot<ConnectionStringOptions>>()
             .Value.dbString));
 
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<IArticleService, ArticleService>();
             return services;
         }
     }

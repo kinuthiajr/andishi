@@ -11,7 +11,7 @@ namespace Andishi.Core.Interfaces
         Task<IEnumerable<Article>> GetAllArticles();
         Task<Article?> GetArticleById(Guid articleid);
         Task<Article> CreateArticle(Article article);
-        Task<Article> UpdateArticle(Guid articleid);
+        Task<Article> UpdateArticle( Article article);
         Task<bool> DeleteArticle(Guid articleid);
     }
 

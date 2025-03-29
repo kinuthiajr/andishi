@@ -13,5 +13,6 @@ namespace Andishi.Core.Entities
         public List<Response> Responses { get; set; } = new();
         public List<Clap> Claps { get; set; } = new();
         public DateTime CreatedAt { get; set; }
+        
     }
 }

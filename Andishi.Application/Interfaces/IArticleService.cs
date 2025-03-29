@@ -10,9 +10,9 @@ namespace Andishi.Application.Interfaces
     public interface IArticleService
     {
         Task<Article> CreateArticleAsync(CreateArticleDTO createArticleDTO);
-        Task<Article?> GetArticleByIdAsync(Guid id);
+        Task<ArticleDTO?> GetArticleByIdAsync(Guid id);
         Task<IEnumerable<Article>> GetAllArticlesAsync();
-        Task UpdateArticleAsync(Guid id, UpdateArticleDTO updateArticleDTO);
-        Task DeleteArticleAsync(Guid id);
+        Task <Article> UpdateArticleAsync(Guid id,UpdateArticleDTO updateArticleDTO);
+        Task <bool> DeleteArticleAsync(Guid id);
     }
 }

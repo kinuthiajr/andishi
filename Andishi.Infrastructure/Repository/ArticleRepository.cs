@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Andishi.Core.Entities;
 using Andishi.Core.Interfaces;
 using Andishi.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Andishi.Infrastructure.Repository
 {
@@ -18,27 +19,39 @@ namespace Andishi.Infrastructure.Repository
 
         public async Task<Article> CreateArticle(Article article)
         {
-            throw new NotImplementedException();   
+            _context.Articles.Add(article);
+            await _context.SaveChangesAsync();
+            return article;  
         }
 
         public Task<bool> DeleteArticle(Guid articleid)
         {
-            throw new NotImplementedException();
+            var article = _context.Articles.FirstOrDefault(a => a.Id == articleid);
+            if (article is not null)
+            {
+                _context.Articles.Remove(article);
+                _context.SaveChanges();
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
         }
 
-        public Task<IEnumerable<Article>> GetAllArticles()
+        public async Task<IEnumerable<Article>> GetAllArticles()
         {
-            throw new NotImplementedException();
+            return await _context.Articles.ToListAsync();
         }
 
-        public Task<Article?> GetArticleById(Guid articleid)
+        public async Task<Article?> GetArticleById(Guid articleid)
         {
-            throw new NotImplementedException();
+            return await _context.Articles.FindAsync(articleid);
         }
 
-        public Task<Article> UpdateArticle(Guid articleid)
+
+        public async Task<Article> UpdateArticle( Article article)
         {
-            throw new NotImplementedException();
+            _context.Entry(article).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return article;
         }
     }
 }
