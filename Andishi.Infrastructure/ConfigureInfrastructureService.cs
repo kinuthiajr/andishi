@@ -11,6 +11,7 @@ using Andishi.Core.Interfaces;
 using Andishi.Infrastructure.Repository;
 using Andishi.Application.Interfaces;
 using Andishi.Application.Services.ArticleService;
+using Andishi.Application.Services.ResponseService;
 
 
 namespace Andishi.Infrastructure
@@ -25,6 +26,8 @@ namespace Andishi.Infrastructure
 
             services.AddScoped<IArticleRepository, ArticleRepository>();
             services.AddScoped<IArticleService, ArticleService>();
+            services.AddScoped<IResponseRepository, ResponseRepository>();
+            services.AddScoped<ResponseService, ResponseService>();
             return services;
         }
     }

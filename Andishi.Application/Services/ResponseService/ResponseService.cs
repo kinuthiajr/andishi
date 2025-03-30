@@ -3,85 +3,75 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Andishi.Application.DTOs.Response;
+using Andishi.Application.Interfaces;
 using Andishi.Core.Entities;
 using Andishi.Core.Interfaces;
 
 namespace Andishi.Application.Services.ResponseService
 {
-    public class ResponseService : IResponseRepository
+    public class ResponseService : IResponseService    
     {
-        private readonly IResponseRepository _responseRepository;
+        private readonly IResponseRepository _responseRepo;
 
-        public ResponseService(IResponseRepository responseRepository)
+        public ResponseService(IResponseRepository responseRepo)
         {
-            _responseRepository = responseRepository;
+            _responseRepo = responseRepo;
         }
 
-        // public async Task<Response> CreateResponse(PostResponseDTO response)
-        // {
-        //     var newResponse = new Response
-        //     {
-        //         Content = response.Content,
-        //         CreatedAt = response.CreatedAt,
-        //         ArticleId = response.ArticleId
-        //     };
-        //     return await _responseRepository.CreateResponse(newResponse);
-        // }
-
-        public async Task<Response?> GetResponseById(Guid id)
+        public async Task<IEnumerable<Response>> GetAllResponsesAsync()
         {
-            return await _responseRepository.GetResponseById(id);
+            return await _responseRepo.GetAllResponses();
         }
 
-        public async Task<IEnumerable<Response?>> GetAllResponses()
+        public async Task<ResponseDTO?> GetResponseByIdAsync(Guid id)
         {
-            return await _responseRepository.GetAllResponses();
-        }
-
-        // public async Task<Response> UpdateResponse(Guid id, UpdateResponseDTO response)
-        // {
-        //     var existingResponse = await _responseRepository.GetResponseById(id);
-        //     if (existingResponse != null)
-        //     {
-        //         existingResponse.Content = response.Content;
-        //         existingResponse.CreatedAt = response.CreatedAt;
-        //         existingResponse.ArticleId = response.ArticleId;
-        //     }
-        //     return await _responseRepository.UpdateResponse(existingResponse);
-        // }
-
-
-        public async Task<bool> DeleteResponse(Guid id)
-        {
-            var deleteResponse = await _responseRepository.GetResponseById(id);
-            if (deleteResponse != null)
+            var getResponse = await _responseRepo.GetResponseById(id);
+            if (getResponse == null)
             {
-                return await _responseRepository.DeleteResponse(id);
+                return null;
             }
-            return false;
+            return new ResponseDTO
+            {
+                Content = getResponse.Content,
+                ArticleId = getResponse.ArticleId,
+                CreatedAt = getResponse.CreatedAt
+            };
+            
         }
 
-        public async Task<Response> CreateResponse(Response response)
+        public async Task<Response> CreateResponseAsync(PostResponseDTO postResponseDTO)
         {
             var newResponse = new Response
             {
-                Content = response.Content,
-                CreatedAt = response.CreatedAt,
-                ArticleId = response.ArticleId
-            };
-            return await _responseRepository.CreateResponse(newResponse);
+                Content = postResponseDTO.Content,
+                ArticleId = postResponseDTO.ArticleId,
+                CreatedAt = DateTime.UtcNow
+            }; 
+            return await _responseRepo.CreateResponse(newResponse);
         }
 
-        public async Task<Response> UpdateResponse(Guid id, Response response)
+        public async Task<Response> UpdateResponseAsync(Guid id, UpdateResponseDTO updateResponseDTO)
         {
-            var existingResponse = await _responseRepository.GetResponseById(id);
-            if (existingResponse != null)
-            {
-                existingResponse.Content = response.Content;
-                existingResponse.CreatedAt = response.CreatedAt;
-                existingResponse.ArticleId = response.ArticleId;
-            }
-            return await _responseRepository.UpdateResponse(id,existingResponse);
+             var getResponse = await _responseRepo.GetResponseById(id);
+             if (getResponse != null)
+             {
+                getResponse.Content = updateResponseDTO.Content;
+                getResponse.ArticleId = updateResponseDTO.ArticleId;
+                getResponse.CreatedAt = DateTime.UtcNow;
+
+                await _responseRepo.UpdateResponse(id,getResponse);
+                return getResponse;
+             }
+
+             return null;
+
+             
+        }
+
+        public Task<bool> DeleteResponseAsync(Guid id)
+        {
+            var deleteResponse = _responseRepo.DeleteResponse(id);
+            return deleteResponse;
         }
     }
 }
