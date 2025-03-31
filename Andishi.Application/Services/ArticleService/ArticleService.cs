@@ -53,13 +53,15 @@ namespace Andishi.Application.Services.ArticleService
                 return null;
             }
 
+            var responseCount = article.Responses.Count;    
+
             return new ArticleDTO
             {
                 Id = article.Id,
                 Title = article.Title,
                 Content = article.Content,
 
-                ResponseCount = article.Responses.Count,
+                ResponseCount = responseCount,
                 ClapCount = article.Claps.Count,
             };
         }

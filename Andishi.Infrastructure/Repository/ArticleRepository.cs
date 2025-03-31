@@ -43,7 +43,9 @@ namespace Andishi.Infrastructure.Repository
 
         public async Task<Article?> GetArticleById(Guid articleid)
         {
-            return await _context.Articles.FindAsync(articleid);
+            return await _context.Articles
+            .Include(a => a.Responses)
+            .FirstOrDefaultAsync(a => a.Id == articleid);
         }
 
 
