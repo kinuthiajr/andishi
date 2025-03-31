@@ -12,7 +12,7 @@ namespace Andishi.API
         public static class Response
         {
             public const string Base = $"{ApiBase}/response";
-            public const string Create = $"{Base}/create";
+            public const string Create = $"{Base}/create/{{articleid:guid}}";
             public const string GetById = $"{Base}/{{id:guid}}";
             public const string GetAll = Base;
             public const string Update = $"{Base}/{{id:guid}}";

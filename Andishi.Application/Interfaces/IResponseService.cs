@@ -11,7 +11,7 @@ namespace Andishi.Application.Interfaces
     {
         Task<IEnumerable<Response>> GetAllResponsesAsync();
         Task<ResponseDTO?> GetResponseByIdAsync(Guid id);
-        Task<Response> CreateResponseAsync(PostResponseDTO postResponseDTO);
+        Task<Response> CreateResponseAsync(Response response);
         Task<Response> UpdateResponseAsync(Guid id, UpdateResponseDTO updateResponseDTO);
         Task<bool> DeleteResponseAsync(Guid id);
     }

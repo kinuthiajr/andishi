@@ -9,10 +9,21 @@ namespace Andishi.Application.Mappers
 {
     public static class ResponseMapper
     {
-        public static ResponseDTO ToResponsedto(this Response response)
+        public static Response ToResponsedto(this PostResponseDTO response, Guid articleid)
         {
-            return new ResponseDTO
+            return new Response
             {
+                Content = response.Content,
+                ArticleId = articleid,
+                CreatedAt = response.CreatedAt
+            };
+        }
+
+        public static PostResponseDTO ToResponseDTO(this Response response)
+        {
+            return new PostResponseDTO
+            {
+                Id = response.Id,
                 Content = response.Content,
                 ArticleId = response.ArticleId,
                 CreatedAt = response.CreatedAt

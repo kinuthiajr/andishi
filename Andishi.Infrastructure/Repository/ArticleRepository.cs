@@ -53,5 +53,13 @@ namespace Andishi.Infrastructure.Repository
             await _context.SaveChangesAsync();
             return article;
         }
+
+
+        public async Task<bool> ArticleExists(Guid id)
+        {
+            var exists = await _context.Articles.AnyAsync(a => a.Id == id);
+            Console.WriteLine($"Article Exists Check: ID = {id}, Exists = {exists}");
+            return exists;
+        }
     }
 }

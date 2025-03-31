@@ -27,7 +27,7 @@ namespace Andishi.Infrastructure
             services.AddScoped<IArticleRepository, ArticleRepository>();
             services.AddScoped<IArticleService, ArticleService>();
             services.AddScoped<IResponseRepository, ResponseRepository>();
-            services.AddScoped<ResponseService, ResponseService>();
+            services.AddScoped<IResponseService, ResponseService>();
             return services;
         }
     }

@@ -39,12 +39,12 @@ namespace Andishi.Application.Services.ResponseService
             
         }
 
-        public async Task<Response> CreateResponseAsync(PostResponseDTO postResponseDTO)
+        public async Task<Response> CreateResponseAsync(Response response)
         {
             var newResponse = new Response
             {
-                Content = postResponseDTO.Content,
-                ArticleId = postResponseDTO.ArticleId,
+                Content = response.Content,
+                ArticleId = response.ArticleId, 
                 CreatedAt = DateTime.UtcNow
             }; 
             return await _responseRepo.CreateResponse(newResponse);

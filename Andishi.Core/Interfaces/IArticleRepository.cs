@@ -13,6 +13,7 @@ namespace Andishi.Core.Interfaces
         Task<Article> CreateArticle(Article article);
         Task<Article> UpdateArticle( Article article);
         Task<bool> DeleteArticle(Guid articleid);
+        Task<bool> ArticleExists(Guid id);
     }
 
 }

@@ -18,6 +18,11 @@ namespace Andishi.Application.Services.ArticleService
             _articleRepository = articleRepository;
         }
 
+        public async Task<bool> ArticleExistsAsync(Guid id)
+        {
+            return await _articleRepository.ArticleExists(id);
+        }
+
         public async Task<Article> CreateArticleAsync(CreateArticleDTO createArticleDTO)
         {
             var newArticle = new Article

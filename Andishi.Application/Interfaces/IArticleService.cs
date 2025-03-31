@@ -14,5 +14,6 @@ namespace Andishi.Application.Interfaces
         Task<IEnumerable<Article>> GetAllArticlesAsync();
         Task <Article> UpdateArticleAsync(Guid id,UpdateArticleDTO updateArticleDTO);
         Task <bool> DeleteArticleAsync(Guid id);
+        Task <bool> ArticleExistsAsync(Guid id);
     }
 }
