@@ -22,11 +22,27 @@ namespace Andishi.Infrastructure.Data
             // Article can have many responses and claps
             // Rship for the one to many
 
+            modelBuilder.Entity<Article>()
+                .HasKey(a => a.Id);
+
+            modelBuilder.Entity<Article>()
+                .Property(a => a.Title)
+                .IsRequired();
+
+            modelBuilder.Entity<Article>()
+                .Property(a => a.Content)
+                .IsRequired();
+
             modelBuilder.Entity<Response>()
                 .HasOne(r => r.Article)
                 .WithMany(a => a.Responses)
                 .HasForeignKey(r => r.ArticleId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Clap>()
+            .HasKey(c => c.Id);
+
+
             
             modelBuilder.Entity<Clap>()
                 .HasOne(r => r.Article)
