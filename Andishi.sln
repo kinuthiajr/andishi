@@ -10,9 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Andishi.Application", "Andishi.Application\Andishi.Application.csproj", "{1A73838B-CB36-4FEB-AC4D-ACFE7A947F1E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Andishi.Infrastructure", "Andishi.Infrastructure\Andishi.Infrastructure.csproj", "{995F2C74-3661-4454-9494-7B63088EF9E9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndishiAppHost", "AndishiAppHost\AndishiAppHost.csproj", "{C8684CF6-9C94-43AD-BB44-5D246643F49C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
