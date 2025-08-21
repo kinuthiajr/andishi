@@ -60,11 +60,17 @@ namespace Andishi.API.Controllers
         public async Task<ActionResult> DeleteArticle([FromRoute] Guid id)
         {
             var deleteArticle = await _articleService.DeleteArticleAsync(id);
-            if (deleteArticle == null)
-            {
-                return NotFound();
-            }
+            // if (deleteArticle == null)
+            // {
+            //     return NotFound();
+            // }
             return Ok(deleteArticle);
+        }
+
+        [HttpGet("/test")] // This is a test endpoint
+        public ActionResult<string> Test()
+        {
+            return "Test successful";
         }
     }
 }
