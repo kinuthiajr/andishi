@@ -1,1 +1,1 @@
-web: dotnet ./Andishi.API.dll
+web: dotnet ./publish/Andishi.API.dll
