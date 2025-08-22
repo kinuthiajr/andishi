@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Andishi.Application\Andishi.Application.csproj" />
-    <ProjectReference Include="..\Andishi.Core\Andishi.Core.csproj" />
     <ProjectReference Include="..\Andishi.Infrastructure\Andishi.Infrastructure.csproj" />
   </ItemGroup>
 
