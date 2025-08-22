@@ -1,0 +1,1 @@
+web: dotnet Andishi.API.dll
