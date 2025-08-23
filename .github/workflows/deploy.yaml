@@ -44,7 +44,7 @@ jobs:
           aws-region: ${{ env.REGION }}
 
       - name: Deploy to Elastic Beanstalk
-        uses: aws-elasticbeanstalk/action-deploy@v1
+        uses: aws-actions/elasticbeanstalk-deploy@v1
         with:
           application_name: ${{ env.EB_APPLICATION_NAME }}
           environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
