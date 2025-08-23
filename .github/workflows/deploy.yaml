@@ -1,0 +1,52 @@
+name: Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - dev # Trigger the workflow on pushes to the 'main' branch
+
+env:
+  SOLUTION_NAME: Blog.sln
+  PROJECT_PATH: Andishi.API/Andishi.API.csproj
+  BUILD_CONFIG: Release
+  EB_APPLICATION_NAME: Andishi-demo-bean # Replace with your Elastic Beanstalk application name
+  EB_ENVIRONMENT_NAME: Andishi-demo-bean-env # Replace with your Elastic Beanstalk environment name
+  REGION: eu-north-1 # Replace with your AWS region
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0' # Use the correct .NET version
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_NAME }}
+
+      - name: Publish application
+        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIG }} --output ./publish
+
+      - name: Create deployment artifact
+        run: |
+          cd ./publish
+          zip -r ../deploy_artifact.zip .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Deploy to Elastic Beanstalk
+        uses: aws-actions/elasticbeanstalk-deploy@v1
+        with:
+          application_name: ${{ env.EB_APPLICATION_NAME }}
+          environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
+          version_label: ${{ github.run_number }}
+          source_bundle: ./deploy_artifact.zip
