@@ -3,10 +3,10 @@ name: Deploy to Elastic Beanstalk
 on:
   push:
     branches:
-      - dev # Trigger the workflow on pushes to the 'main' branch
+      - dev # Trigger the workflow on pushes to the 'dev' branch
 
 env:
-  SOLUTION_NAME: Blog.sln
+  SOLUTION_NAME: Andishi.sln # Please confirm this is the correct solution file name
   PROJECT_PATH: Andishi.API/Andishi.API.csproj
   BUILD_CONFIG: Release
   EB_APPLICATION_NAME: Andishi-demo-bean # Replace with your Elastic Beanstalk application name
