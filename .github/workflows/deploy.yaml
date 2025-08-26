@@ -13,8 +13,8 @@ env:
   SOLUTION_NAME: Andishi.sln # Please confirm this is the correct solution file name
   PROJECT_PATH: Andishi.API/Andishi.API.csproj
   BUILD_CONFIG: Release
-  EB_APPLICATION_NAME: Andishi-demo-bean # Replace with your Elastic Beanstalk application name
-  EB_ENVIRONMENT_NAME: Andishi-demo-bean-env # Replace with your Elastic Beanstalk environment name
+  EB_APPLICATION_NAME: andishi-demo # Replace with your Elastic Beanstalk application name
+  EB_ENVIRONMENT_NAME: Andishi-demo-env-1 # Replace with your Elastic Beanstalk environment name
   REGION: eu-north-1 # Replace with your AWS region
 
 jobs:
