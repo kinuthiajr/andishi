@@ -37,7 +37,7 @@ jobs:
         run: dotnet tool install --global dotnet-ef
         
       - name: Run Database Migrations
-        run: dotnet ef database update --connection "${{ secrets.RDS_CONNECTION_STRING }}"
+        run: dotnet ef database update --connection "${{ secrets.RDS_CONNECTION_STRING }}" --project ${{ env.PROJECT_PATH }}
         env:
           DOTNET_ENVIRONMENT: Development
       # *** END OF NEW MIGRATION STEPS ***
