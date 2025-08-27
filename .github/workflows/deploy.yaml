@@ -32,6 +32,16 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
 
+       # *** START OF NEW MIGRATION STEPS ***
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+        
+      - name: Run Database Migrations
+        run: dotnet ef database update --connection "${{ secrets.RDS_CONNECTION_STRING }}"
+        env:
+          DOTNET_ENVIRONMENT: Development
+      # *** END OF NEW MIGRATION STEPS ***
+
       - name: Publish application
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIG }} --output ./publish
 
