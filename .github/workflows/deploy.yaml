@@ -1,21 +1,20 @@
-name: Deploy to Elastic Beanstalk
+name: Deploy to Azure app
 
 on:
   push:
     branches:
-      - dev # Trigger the workflow on pushes to the 'dev' branch
+      - dev
 
 permissions:
-  id-token: write # Required for authenticating with AWS via OIDC
+  id-token: write
   contents: read
 
 env:
-  SOLUTION_NAME: Andishi.sln # Please confirm this is the correct solution file name
+  SOLUTION_NAME: Andishi.sln
   PROJECT_PATH: Andishi.API/Andishi.API.csproj
   BUILD_CONFIG: Release
-  EB_APPLICATION_NAME: andishi-demo # Replace with your Elastic Beanstalk application name
-  EB_ENVIRONMENT_NAME: Andishi-demo-env-1 # Replace with your Elastic Beanstalk environment name
-  REGION: eu-north-1 # Replace with your AWS region
+  AZURE_WEBAPP_NAME: andishi
+  AZURE_RESOURCE_GROUP: andishi_group
 
 jobs:
   deploy:
@@ -24,39 +23,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ❗ CORRECT AZURE LOGIN STEP
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0' # Recommended to use LTS version unless preview features are needed
+          dotnet-version: '9.0'
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
 
-       # *** START OF NEW MIGRATION STEPS ***
+      # EF Core tools and migrations
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef
-        
+
       - name: Run Database Migrations
-        run: dotnet ef database update --connection "${{ secrets.RDS_CONNECTION_STRING }}" --project ${{ env.PROJECT_PATH }}
+        run: dotnet ef database update --connection "${{ secrets.NEON_CONNECTION_STRING }}" --project ${{ env.PROJECT_PATH }}
         env:
           DOTNET_ENVIRONMENT: Development
-      # *** END OF NEW MIGRATION STEPS ***
 
       - name: Publish application
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIG }} --output ./publish
 
-      - name: Create deployment artifact
-        run: |
-          cd ./publish
-          zip -r ../deploy_artifact.zip .
+      # ❗ REMOVE the `Create deployment artifact` step as it's not needed.
 
-      - name: Deploy to Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v21
+      # ❗ ADD THE AZURE WEB APP DEPLOYMENT STEP
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: ${{ env.EB_APPLICATION_NAME }}
-          environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
-          version_label: ${{ github.run_number }}
-          region: ${{ env.REGION }}
-          deployment_package: ./deploy_artifact.zip
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: './publish' # Deploys the published folder directly
