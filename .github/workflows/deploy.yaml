@@ -108,19 +108,12 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID_PROD }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_PROD }}
       - name: Run Main Database Migrations
-        run: dotnet ef database update --project ${{ env.PROJECT_PATH }}
-        env:
-            ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_PROD }}
-
+        run: |
+              dotnet tool install --global dotnet-ef
+              dotnet ef database update --project ${{ env.PROJECT_PATH }} --connection "${{ secrets.NEON_CONNECTION_STRING_PROD }}"
       - name: Deploy to Azure Prod App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'andishi-api'
-          package: './publish'
-          connection-strings: '[
-            {
-              "name": "DefaultConnectionString",
-              "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}",
-              "type": "PostgreSQL"
-            }
-          ]'
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'andishi-api'
+        package: './publish'
+        app-settings: '[{"name": "ConnectionStrings__DefaultConnectionString", "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}", "slotSetting": false}]'
