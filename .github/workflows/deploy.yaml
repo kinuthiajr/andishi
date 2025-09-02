@@ -1,9 +1,9 @@
 name: Deploy to Azure app
-
 on:
   push:
     branches:
       - dev
+      - main
 
 permissions:
   id-token: write
@@ -13,49 +13,114 @@ env:
   SOLUTION_NAME: Andishi.sln
   PROJECT_PATH: Andishi.API/Andishi.API.csproj
   BUILD_CONFIG: Release
-  AZURE_WEBAPP_NAME: andishi
-  AZURE_RESOURCE_GROUP: andishi_group
+  
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # ❗ CORRECT AZURE LOGIN STEP
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+      - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0'
-
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_NAME }}
-
-      # EF Core tools and migrations
-      - name: Install EF Core tools
-        run: dotnet tool install --global dotnet-ef
-
-      - name: Run Database Migrations
-        run: dotnet ef database update --connection "${{ secrets.NEON_CONNECTION_STRING }}" --project ${{ env.PROJECT_PATH }}
-        env:
-          DOTNET_ENVIRONMENT: Development
-
       - name: Publish application
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration ${{ env.BUILD_CONFIG }} --output ./publish
-
-      # ❗ REMOVE the `Create deployment artifact` step as it's not needed.
-
-      # ❗ ADD THE AZURE WEB APP DEPLOYMENT STEP
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          package: './publish' # Deploys the published folder directly
+          name: published-app
+          path: ./publish
+
+  deploy-dev:
+    if : github.ref == 'refs/heads/dev'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: published-app
+          path: ./publish
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+      - name: Install EF Core Tools
+        run: dotnet tool install --global dotnet-ef
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID_DEV }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID_DEV }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Run Dev Database Migrations
+        run: dotnet ef database update --project ${{ env.PROJECT_PATH }}
+        env:
+          ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_DEV }}
+          
+      - name: Deploy to Azure Dev App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'andishi'
+          package: './publish'
+          connection-strings: '[
+            {
+              "name": "DefaultConnectionString",
+              "value": "${{ secrets.NEON_CONNECTION_STRING_DEV }}",
+              "type": "PostgreSQL"
+            }
+          ]'
+
+  deploy-prod:
+    if : github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: main
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: published-app
+          path: ./publish
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+      - name: Install EF Core Tools
+        run: dotnet tool install --global dotnet-ef
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID_PROD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID_PROD }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_PROD }}
+      - name: Run Main Database Migrations
+        run: dotnet ef database update --project ${{ env.PROJECT_PATH }}
+        env:
+            ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_PROD }}
+
+      - name: Deploy to Azure Prod App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'andishi-api'
+          package: './publish'
+          connection-strings: '[
+            {
+              "name": "DefaultConnectionString",
+              "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}",
+              "type": "PostgreSQL"
+            }
+          ]'
