@@ -42,7 +42,7 @@ jobs:
           path: ./publish
 
   deploy-dev:
-    if : github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/dev'
     needs: build
     runs-on: ubuntu-latest
     environment: staging
@@ -69,7 +69,6 @@ jobs:
         run: dotnet ef database update --project ${{ env.PROJECT_PATH }}
         env:
           ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_DEV }}
-          
       - name: Deploy to Azure Dev App
         uses: azure/webapps-deploy@v3
         with:
@@ -84,7 +83,7 @@ jobs:
           ]'
 
   deploy-prod:
-    if : github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment: production
@@ -108,12 +107,18 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID_PROD }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_PROD }}
       - name: Run Main Database Migrations
-        run: |
-              dotnet tool install --global dotnet-ef
-              dotnet ef database update --project ${{ env.PROJECT_PATH }} --connection "${{ secrets.NEON_CONNECTION_STRING_PROD }}"
+        run: dotnet ef database update --project ${{ env.PROJECT_PATH }}
+        env:
+          ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_PROD }}
       - name: Deploy to Azure Prod App
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: 'andishi-api'
-        package: './publish'
-        app-settings: '[{"name": "ConnectionStrings__DefaultConnectionString", "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}", "slotSetting": false}]'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'andishi-api'
+          package: './publish'
+          connection-strings: '[
+            {
+              "name": "DefaultConnectionString",
+              "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}",
+              "type": "PostgreSQL"
+            }
+          ]'
