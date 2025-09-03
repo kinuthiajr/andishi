@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Andishi.Core.Entities
 {
@@ -12,6 +13,8 @@ namespace Andishi.Core.Entities
         public string Content { get; set; } = string.Empty;
         public List<Response> Responses { get; set; } = new();
         public List<Clap> Claps { get; set; } = new();
+        [NotMapped]
+        public int ClapCount => Claps.Count;
         public DateTime CreatedAt { get; set; }
         
     }
