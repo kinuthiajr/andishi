@@ -78,11 +78,11 @@ jobs:
         uses: azure/appservice-settings@v1
         with:
           app-name: 'andishi'
-          connection-strings-json: '[
+          app-settings-json: '[
             {
-              "name": "DefaultConnectionString",
+              "name": "ConnectionStrings__DefaultConnectionString",
               "value": "${{ secrets.NEON_CONNECTION_STRING_DEV }}",
-              "type": "PostgreSQL"
+              "slotSetting": false
             }
           ]'
 
@@ -123,10 +123,10 @@ jobs:
         uses: azure/appservice-settings@v1
         with:
           app-name: 'andishi-api'
-          connection-strings-json: '[
+          app-settings-json: '[
             {
-              "name": "DefaultConnectionString",
+              "name": "ConnectionStrings__DefaultConnectionString",
               "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}",
-              "type": "PostgreSQL"
+              "slotSetting": false
             }
           ]'
