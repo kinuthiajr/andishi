@@ -74,6 +74,10 @@ jobs:
         with:
           app-name: 'andishi'
           package: './publish'
+      - name: Set App Service connection string for Dev
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: 'andishi'
           connection-strings: '[
             {
               "name": "DefaultConnectionString",
@@ -115,6 +119,10 @@ jobs:
         with:
           app-name: 'andishi-api'
           package: './publish'
+      - name: Set App Service connection string for Prod
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: 'andishi-api'
           connection-strings: '[
             {
               "name": "DefaultConnectionString",
