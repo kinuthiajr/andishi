@@ -115,10 +115,4 @@ jobs:
         with:
           app-name: 'andishi-api'
           package: './publish'
-          connection-strings: '[
-            {
-              "name": "DefaultConnectionString",
-              "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}",
-              "type": "PostgreSQL"
-            }
-          ]'
+          app-settings: '[{"name": "ConnectionStrings__DefaultConnectionString", "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}", "slotSetting": false}]'
