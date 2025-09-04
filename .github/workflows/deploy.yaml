@@ -42,10 +42,10 @@ jobs:
           path: ./publish
 
   deploy-dev:
-    if : github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/dev'
     needs: build
     runs-on: ubuntu-latest
-    environment: dev
+    environment: staging
     steps:
       - uses: actions/checkout@v4
       - name: Download artifact
@@ -69,25 +69,28 @@ jobs:
         run: dotnet ef database update --project ${{ env.PROJECT_PATH }}
         env:
           ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_DEV }}
-          
       - name: Deploy to Azure Dev App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'andishi'
           package: './publish'
-          connection-strings: '[
+      - name: Set App Service connection string for Dev
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: 'andishi'
+          app-settings-json: '[
             {
-              "name": "DefaultConnectionString",
+              "name": "ConnectionStrings__DefaultConnectionString",
               "value": "${{ secrets.NEON_CONNECTION_STRING_DEV }}",
-              "type": "PostgreSQL"
+              "slotSetting": false
             }
           ]'
 
   deploy-prod:
-    if : github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
-    environment: main
+    environment: production
     steps:
       - uses: actions/checkout@v4
       - name: Download artifact
@@ -110,17 +113,20 @@ jobs:
       - name: Run Main Database Migrations
         run: dotnet ef database update --project ${{ env.PROJECT_PATH }}
         env:
-            ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_PROD }}
-
+          ConnectionStrings__DefaultConnectionString: ${{ secrets.NEON_CONNECTION_STRING_PROD }}
       - name: Deploy to Azure Prod App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'andishi-api'
           package: './publish'
-          connection-strings: '[
+      - name: Set App Service connection string for Prod
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: 'andishi-api'
+          app-settings-json: '[
             {
-              "name": "DefaultConnectionString",
+              "name": "ConnectionStrings__DefaultConnectionString",
               "value": "${{ secrets.NEON_CONNECTION_STRING_PROD }}",
-              "type": "PostgreSQL"
+              "slotSetting": false
             }
           ]'
